@@ -20,12 +20,8 @@ app = FastAPI(title="ChatFlow API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://chatflow-gaurav.vercel.app", # Replace with your actual Vercel URL
-        "*" # Fallback (Note: some browsers might still be strict)
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
