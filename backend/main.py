@@ -5,8 +5,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Dict
 
 from fastapi import FastAPI, Depends, HTTPException, status, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -161,12 +159,3 @@ async def startup_event():
     # Spin up un-awaited worker execution string
     asyncio.create_task(delete_old_messages())
 
-# --- Static File Serving (For Deployment) ---
-# Ensure the React 'dist' folder exists after 'npm run build'
-if os.path.exists("../dist"):
-    app.mount("/", StaticFiles(directory="../dist", html=True), name="static")
-
-    # Catch-all route to handle React Router (SPA)
-    @app.get("/{full_path:path}")
-    async def serve_spa(full_path: str):
-        return FileResponse("../dist/index.html")

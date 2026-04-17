@@ -13,7 +13,8 @@ export default function Login() {
     setError(null);
     
     try {
-      const response = await fetch('/token', {
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiBase}/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ username: email, password })

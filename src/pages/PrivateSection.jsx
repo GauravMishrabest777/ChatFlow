@@ -25,8 +25,9 @@ export default function PrivateSection() {
       try {
         const headers = { 'Authorization': `Bearer ${token}` };
         
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
         // Fetch ONLY private friends
-        const resFriends = await fetch('/friends/list?private=true', { headers });
+        const resFriends = await fetch(`${apiBase}/friends/list?private=true`, { headers });
         if (resFriends.ok) {
           const data = await resFriends.json();
           setFriends(data.map(f => ({
@@ -42,7 +43,7 @@ export default function PrivateSection() {
         }
 
         // Fetch requests (shared across app)
-        const resPending = await fetch('/friends/pending', { headers });
+        const resPending = await fetch(`${apiBase}/friends/pending`, { headers });
         if (resPending.ok) {
           setPendingRequests(await resPending.json());
         }
@@ -54,8 +55,8 @@ export default function PrivateSection() {
     fetchData();
 
     // Open WebSocket (Auto-detect protocol and host for deployment)
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    ws.current = new WebSocket(`${protocol}//${window.location.host}/ws/${appId}`);
+    const wsBase = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
+    ws.current = new WebSocket(`${wsBase}/ws/${appId}`);
     
     ws.current.onmessage = (event) => {
       try {
@@ -87,7 +88,8 @@ export default function PrivateSection() {
     
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`/friends/messages/${selectedChat.id}`, {
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${apiBase}/friends/messages/${selectedChat.id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -131,7 +133,8 @@ export default function PrivateSection() {
 
   const handleRejectRequest = async (requestId) => {
     try {
-      await fetch(`/friends/reject/${requestId}`, {
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      await fetch(`${apiBase}/friends/reject/${requestId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });

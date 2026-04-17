@@ -25,8 +25,9 @@ export default function Dashboard() {
       try {
         const headers = { 'Authorization': `Bearer ${token}` };
         
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
         // Fetch friends (filtered for non-private)
-        const resFriends = await fetch('/friends/list?private=false', { headers });
+        const resFriends = await fetch(`${apiBase}/friends/list?private=false`, { headers });
         if (resFriends.ok) {
           const data = await resFriends.json();
           setFriends(data.map(f => ({
@@ -42,7 +43,7 @@ export default function Dashboard() {
         }
 
         // Fetch requests
-        const resPending = await fetch('/friends/pending', { headers });
+        const resPending = await fetch(`${apiBase}/friends/pending`, { headers });
         if (resPending.ok) {
           setPendingRequests(await resPending.json());
         }
@@ -54,8 +55,8 @@ export default function Dashboard() {
     fetchData();
 
     // Open WebSocket (Auto-detect protocol and host for deployment)
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    ws.current = new WebSocket(`${protocol}//${window.location.host}/ws/${appId}`);
+    const wsBase = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
+    ws.current = new WebSocket(`${wsBase}/ws/${appId}`);
     
     ws.current.onmessage = (event) => {
       try {
@@ -92,7 +93,8 @@ export default function Dashboard() {
     
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`/friends/messages/${selectedChat.id}`, {
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${apiBase}/friends/messages/${selectedChat.id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -114,7 +116,8 @@ export default function Dashboard() {
 
   const handleAddFriend = async (friendIdInput) => {
     try {
-      await fetch('/friends/request', {
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      await fetch(`${apiBase}/friends/request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ receiver_app_id: friendIdInput })
@@ -127,7 +130,8 @@ export default function Dashboard() {
 
   const handleAcceptRequest = async (requestId) => {
     try {
-      await fetch(`/friends/accept/${requestId}`, {
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      await fetch(`${apiBase}/friends/accept/${requestId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -139,7 +143,8 @@ export default function Dashboard() {
 
   const handleRejectRequest = async (requestId) => {
     try {
-      await fetch(`/friends/reject/${requestId}`, {
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      await fetch(`${apiBase}/friends/reject/${requestId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
