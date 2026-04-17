@@ -26,7 +26,7 @@ export default function Dashboard() {
         const headers = { 'Authorization': `Bearer ${token}` };
         
         // Fetch friends (filtered for non-private)
-        const resFriends = await fetch('http://localhost:8000/friends/list?private=false', { headers });
+        const resFriends = await fetch('/friends/list?private=false', { headers });
         if (resFriends.ok) {
           const data = await resFriends.json();
           setFriends(data.map(f => ({
@@ -42,7 +42,7 @@ export default function Dashboard() {
         }
 
         // Fetch requests
-        const resPending = await fetch('http://localhost:8000/friends/pending', { headers });
+        const resPending = await fetch('/friends/pending', { headers });
         if (resPending.ok) {
           setPendingRequests(await resPending.json());
         }
@@ -53,8 +53,9 @@ export default function Dashboard() {
     
     fetchData();
 
-    // Open WebSocket
-    ws.current = new WebSocket(`ws://localhost:8000/ws/${appId}`);
+    // Open WebSocket (Auto-detect protocol and host for deployment)
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws.current = new WebSocket(`${protocol}//${window.location.host}/ws/${appId}`);
     
     ws.current.onmessage = (event) => {
       try {
@@ -91,7 +92,7 @@ export default function Dashboard() {
     
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/friends/messages/${selectedChat.id}`, {
+        const res = await fetch(`/friends/messages/${selectedChat.id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -113,7 +114,7 @@ export default function Dashboard() {
 
   const handleAddFriend = async (friendIdInput) => {
     try {
-      await fetch('http://localhost:8000/friends/request', {
+      await fetch('/friends/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ receiver_app_id: friendIdInput })
@@ -126,7 +127,7 @@ export default function Dashboard() {
 
   const handleAcceptRequest = async (requestId) => {
     try {
-      await fetch(`http://localhost:8000/friends/accept/${requestId}`, {
+      await fetch(`/friends/accept/${requestId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -138,7 +139,7 @@ export default function Dashboard() {
 
   const handleRejectRequest = async (requestId) => {
     try {
-      await fetch(`http://localhost:8000/friends/reject/${requestId}`, {
+      await fetch(`/friends/reject/${requestId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });

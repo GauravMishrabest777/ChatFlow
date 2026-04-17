@@ -114,7 +114,7 @@ export default function ChatArea({ selectedChat, setSelectedChat, messages, onSe
                   <button 
                     onClick={async () => {
                       const token = localStorage.getItem('access_token');
-                      await fetch(`http://localhost:8000/friends/toggle-private/${selectedChat.id}`, {
+                      await fetch(`/friends/toggle-private/${selectedChat.id}`, {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${token}` }
                       });
@@ -130,7 +130,7 @@ export default function ChatArea({ selectedChat, setSelectedChat, messages, onSe
                   <button 
                     onClick={async () => {
                       const token = localStorage.getItem('access_token');
-                      await fetch(`http://localhost:8000/friends/block/${selectedChat.id}`, {
+                      await fetch(`/friends/block/${selectedChat.id}`, {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${token}` }
                       });
