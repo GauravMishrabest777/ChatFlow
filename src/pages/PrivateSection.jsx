@@ -30,16 +30,18 @@ export default function PrivateSection() {
         const resFriends = await fetch(`${apiBase}/friends/list?private=true`, { headers });
         if (resFriends.ok) {
           const data = await resFriends.json();
-          setFriends(data.map(f => ({
-            id: f.friend_app_id,
-            name: f.friend_name,
-            preview: "Vault Chat Locked",
-            time: "Secured",
-            unread: 0,
-            img: `https://ui-avatars.com/api/?name=${f.friend_name}&background=1a1a1a&color=3ec6a8`,
-            is_blocked: f.is_blocked,
-            is_private: f.is_private
-          })));
+          if (Array.isArray(data)) {
+            setFriends(data.map(f => ({
+              id: f.friend_app_id,
+              name: f.friend_name,
+              preview: "Vault Chat Locked",
+              time: "Secured",
+              unread: 0,
+              img: `https://ui-avatars.com/api/?name=${f.friend_name}&background=1a1a1a&color=3ec6a8`,
+              is_blocked: f.is_blocked,
+              is_private: f.is_private
+            })));
+          }
         }
 
         // Fetch requests (shared across app)

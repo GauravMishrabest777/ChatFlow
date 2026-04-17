@@ -30,16 +30,18 @@ export default function Dashboard() {
         const resFriends = await fetch(`${apiBase}/friends/list?private=false`, { headers });
         if (resFriends.ok) {
           const data = await resFriends.json();
-          setFriends(data.map(f => ({
-            id: f.friend_app_id,
-            name: f.friend_name,
-            preview: "Connected.",
-            time: "Now",
-            unread: 0,
-            img: `https://ui-avatars.com/api/?name=${f.friend_name}&background=0f7a65&color=fff`,
-            is_blocked: f.is_blocked,
-            is_private: f.is_private
-          })));
+          if (Array.isArray(data)) {
+            setFriends(data.map(f => ({
+              id: f.friend_app_id,
+              name: f.friend_name,
+              preview: "Connected.",
+              time: "Now",
+              unread: 0,
+              img: `https://ui-avatars.com/api/?name=${f.friend_name}&background=0f7a65&color=fff`,
+              is_blocked: f.is_blocked,
+              is_private: f.is_private
+            })));
+          }
         }
 
         // Fetch requests
