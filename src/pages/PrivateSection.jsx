@@ -58,27 +58,32 @@ export default function PrivateSection() {
 
     // Open WebSocket (Auto-detect protocol and host for deployment)
     const wsBase = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
-    ws.current = new WebSocket(`${wsBase}/ws/${appId}`);
     
-    ws.current.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        const senderId = data.sender_id;
-        const incomingMsg = {
-           id: Date.now(),
-           text: data.content,
-           sender: senderId,
-           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-        
-        setChatMessages(prev => ({
-          ...prev,
-          [senderId]: [...(prev[senderId] || []), incomingMsg]
-        }));
-      } catch (err) {
-        console.error("WS Parse error", err);
-      }
-    };
+    try {
+      ws.current = new WebSocket(`${wsBase}/ws/${appId}`);
+      
+      ws.current.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          const senderId = data.sender_id;
+          const incomingMsg = {
+             id: Date.now(),
+             text: data.content,
+             sender: senderId,
+             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          
+          setChatMessages(prev => ({
+            ...prev,
+            [senderId]: [...(prev[senderId] || []), incomingMsg]
+          }));
+        } catch (err) {
+          console.error("WS Parse error", err);
+        }
+      };
+    } catch (err) {
+      console.error("WebSocket Connection Error:", err);
+    }
 
     return () => {
       if (ws.current) ws.current.close();
